@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fabric Grader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Fabric Quality Grader</h1>
+        <div class="form">
+            <input type="number" id="defects" placeholder="Defect Count (0-10)">
+            <input type="number" step="0.01" id="color" placeholder="Color Variance (0-1)">
+            <input type="number" step="0.01" id="texture" placeholder="Texture Variance (0-1)">
+            <button onclick="gradeFabric()">Grade Fabric</button>
+        </div>
+        <div id="result"></div>
+    </div>
+    <script>
+        async function gradeFabric() {
+            const defects = document.getElementById('defects').value;
+            const color = document.getElementById('color').value;
+            const texture = document.getElementById('texture').value;
+            
+            const response = await fetch('/api/grade', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    defects: parseFloat(defects),
+                    color_var: parseFloat(color),
+                    texture_var: parseFloat(texture)
+                })
+            });
+            
+            const result = await response.json();
+            const display = result.score ? 
+                `Quality Score: ${result.score}/100 (Grade: ${result.grade})` : 
+                `Error: ${result.error}`;
+                
+            document.getElementById('result').innerHTML = display;
+        }
+    </script>
+</body>
+</html>
